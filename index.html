@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0c1a17" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="Lum Tide — a fan-made 2D platformer tribute to Rayman Origins, with full touch controls." />
+  <title>Rayman Origins · Lum Tide</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="game" aria-label="Lum Tide game canvas" role="img"></canvas>
+
+    <!-- In-game HUD is drawn on the canvas. This bar only holds system buttons. -->
+    <div id="system-bar" class="system-bar">
+      <button id="btn-pause" class="icon-btn" aria-label="Pause game" title="Pause (P)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1.5"/><rect x="14" y="4" width="4" height="16" rx="1.5"/></svg>
+      </button>
+      <button id="btn-sound" class="icon-btn" aria-label="Toggle sound" title="Mute (M)">
+        <svg class="sound-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg class="sound-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <!-- Touch controls -->
+    <div id="touch-controls" class="touch-controls" aria-hidden="true">
+      <div id="joystick" class="joystick">
+        <div class="joystick-ring"></div>
+        <div id="joystick-stick" class="joystick-stick">
+          <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M14 8l6 12 6-12M20 20v12" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="joystick-label">MOVE</span>
+      </div>
+      <div class="action-cluster">
+        <button id="btn-punch" class="action-btn punch" aria-label="Punch">
+          <span class="btn-glyph">✊</span><span class="btn-label">PUNCH</span>
+        </button>
+        <button id="btn-jump" class="action-btn jump" aria-label="Jump">
+          <span class="btn-glyph">↑</span><span class="btn-label">JUMP</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Title screen -->
+    <section id="screen-title" class="screen screen-title is-active">
+      <div class="title-wrap">
+        <div class="title-kicker">A FAN-MADE 2D TRIBUTE</div>
+        <h1 class="logo" aria-label="Rayman Origins Lum Tide">
+          <span class="logo-rayman">RAYMAN</span>
+          <span class="logo-origins">ORIGINS</span>
+          <span class="logo-lum">LUM TIDE</span>
+        </h1>
+        <p class="tagline">The Glade of Dreams is losing its light.<br/>Run, jump, punch — and bring the Lums home.</p>
+        <nav class="menu menu-main" aria-label="Main menu">
+          <button class="btn btn-primary" data-action="continue">
+            <span class="btn-big">PLAY</span><span class="btn-sub" id="continue-label">NEW ADVENTURE</span>
+          </button>
+          <button class="btn btn-ghost" data-action="levels">LEVEL SELECT</button>
+          <button class="btn btn-ghost" data-action="howto">HOW TO PLAY</button>
+        </nav>
+        <div class="save-note" id="save-note"></div>
+        <div class="title-foot">
+          <span>Original art &amp; code. No assets from the original game.</span>
+          <span class="foot-sep">·</span>
+          <span>Made for desktop &amp; mobile</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Level select -->
+    <section id="screen-levels" class="screen screen-levels" aria-label="Level select">
+      <div class="panel-wrap wide">
+        <header class="panel-head">
+          <div>
+            <div class="eyebrow">THE GLADE OF DREAMS</div>
+            <h2>Choose a world</h2>
+          </div>
+          <button class="btn btn-icon-close" data-action="back-title" aria-label="Back to title">✕</button>
+        </header>
+        <div class="level-grid" id="level-grid"></div>
+        <footer class="panel-foot">
+          <span id="progress-summary">0 Lums gathered</span>
+          <button class="btn btn-ghost small" data-action="back-title">BACK</button>
+        </footer>
+      </div>
+    </section>
+
+    <!-- How to play -->
+    <section id="screen-howto" class="screen screen-howto" aria-label="How to play">
+      <div class="panel-wrap">
+        <header class="panel-head">
+          <div>
+            <div class="eyebrow">FIELD MANUAL</div>
+            <h2>How to play</h2>
+          </div>
+          <button class="btn btn-icon-close" data-action="back-title" aria-label="Back to title">✕</button>
+        </header>
+        <div class="howto-grid">
+          <div class="howto-card">
+            <div class="howto-icon">⌨️</div>
+            <h3>Desktop</h3>
+            <ul class="key-list">
+              <li><span class="keys"><kbd>A</kbd><kbd>D</kbd> / <kbd>←</kbd><kbd>→</kbd></span> Move</li>
+              <li><span class="keys"><kbd>SPACE</kbd> / <kbd>W</kbd></span> Jump · double jump</li>
+              <li><span class="keys">hold <kbd>SPACE</kbd></span> Helicopter glide</li>
+              <li><span class="keys"><kbd>X</kbd> / <kbd>J</kbd></span> Punch</li>
+              <li><span class="keys"><kbd>P</kbd> / <kbd>ESC</kbd></span> Pause</li>
+              <li><span class="keys"><kbd>M</kbd></span> Mute</li>
+            </ul>
+          </div>
+          <div class="howto-card">
+            <div class="howto-icon">📱</div>
+            <h3>Mobile</h3>
+            <ul class="touch-list">
+              <li><span class="touch-dot left"></span> Drag the left stick to run</li>
+              <li><span class="touch-dot jump"></span> Tap <b>JUMP</b> twice to double jump</li>
+              <li><span class="touch-dot jump"></span> Hold <b>JUMP</b> while falling to glide</li>
+              <li><span class="touch-dot punch"></span> Tap <b>PUNCH</b> to slap enemies</li>
+              <li><span class="touch-dot pause"></span> Pause with the button up top</li>
+            </ul>
+          </div>
+        </div>
+        <div class="howto-tips">
+          <div><b>Lums</b> light your way. Grab every one you can.</div>
+          <div><b>Electoon cages</b> hide the Glade's critters — free all three per level.</div>
+          <div><b>Stomp</b> enemies from above, or punch them up close.</div>
+          <div><b>Checkpoint bells</b> save your run. Hearts refill there.</div>
+        </div>
+        <footer class="panel-foot">
+          <span>Tip: the hair spin slows your fall. Use it to cross wide pits.</span>
+          <button class="btn btn-primary small" data-action="back-title">GOT IT</button>
+        </footer>
+      </div>
+    </section>
+
+    <!-- Pause -->
+    <section id="screen-pause" class="screen screen-modal" aria-label="Pause menu">
+      <div class="modal-card">
+        <div class="eyebrow">TAKE A BREATH</div>
+        <h2>Paused</h2>
+        <div class="modal-stats" id="pause-stats"></div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" data-action="resume">RESUME</button>
+          <button class="btn btn-ghost" data-action="restart">RESTART LEVEL</button>
+          <button class="btn btn-ghost" data-action="levels-from-pause">LEVEL SELECT</button>
+        </div>
+        <button class="btn btn-text" data-action="toggle-sound">SOUND: <span id="pause-sound-label">ON</span></button>
+      </div>
+    </section>
+
+    <!-- Level complete -->
+    <section id="screen-results" class="screen screen-modal" aria-label="Level complete">
+      <div class="modal-card results-card">
+        <div class="eyebrow" id="results-eyebrow">WORLD CLEARED</div>
+        <h2 id="results-title">Jibberish Jungle</h2>
+        <div class="medal" id="results-medal"><span class="medal-star">★</span><span class="medal-name">GOLD</span></div>
+        <div class="results-grid">
+          <div class="result-cell"><span class="result-label">LUMS</span><span class="result-value" id="result-lums">0 / 0</span></div>
+          <div class="result-cell"><span class="result-label">ELECTOONS</span><span class="result-value" id="result-cages">0 / 3</span></div>
+          <div class="result-cell"><span class="result-label">TIME</span><span class="result-value" id="result-time">0:00</span></div>
+        </div>
+        <div class="results-best" id="results-best"></div>
+        <div class="modal-actions row">
+          <button class="btn btn-primary" data-action="next-level" id="btn-next">NEXT WORLD</button>
+          <button class="btn btn-ghost" data-action="retry">RETRY</button>
+          <button class="btn btn-ghost" data-action="levels-from-results">LEVELS</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Game over / death prompt -->
+    <section id="screen-dead" class="screen screen-modal" aria-label="Try again">
+      <div class="modal-card dead-card">
+        <div class="eyebrow">THE GLOOM GOT YOU</div>
+        <h2>Try again?</h2>
+        <p class="dead-copy" id="dead-copy">You still have the Lums you gathered.</p>
+        <div class="modal-actions row">
+          <button class="btn btn-primary" data-action="retry">RETRY</button>
+          <button class="btn btn-ghost" data-action="levels-from-dead">LEVELS</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final victory -->
+    <section id="screen-victory" class="screen screen-victory" aria-label="Adventure complete">
+      <div class="victory-wrap">
+        <div class="eyebrow">THE GLADE SHINES AGAIN</div>
+        <h2>Lum Tide restored!</h2>
+        <p>The Livid King has fallen. The Lum Tide is rising, and the Glade of Dreams is dancing again — and it's all thanks to you.</p>
+        <div class="victory-totals" id="victory-totals"></div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" data-action="levels-from-victory">WORLD SELECT</button>
+          <button class="btn btn-ghost" data-action="back-title">TITLE SCREEN</button>
+        </div>
+        <div class="title-foot">Thank you for playing this fan-made tribute.</div>
+      </div>
+    </section>
+
+    <!-- Rotate hint for portrait phones -->
+    <div id="rotate-hint" class="rotate-hint" role="dialog" aria-label="Rotate your device">
+      <div class="rotate-icon">📱</div>
+      <h2>Turn it sideways</h2>
+      <p>Lum Tide is best in landscape. Rotate your phone for the full view.</p>
+      <button class="btn btn-ghost small" id="btn-play-portrait">PLAY ANYWAY</button>
+    </div>
+
+    <div id="toast" class="toast" role="status"></div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

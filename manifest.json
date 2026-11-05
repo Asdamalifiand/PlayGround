@@ -1,0 +1,13 @@
+{
+  "name": "Rayman Origins · Lum Tide",
+  "short_name": "Lum Tide",
+  "description": "A fan-made 2D platformer tribute with full touch controls.",
+  "start_url": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#06100e",
+  "theme_color": "#0c1a17",
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
